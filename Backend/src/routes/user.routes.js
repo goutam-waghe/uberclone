@@ -14,4 +14,14 @@ userRoute.post(
   ],
   userController.registerUser
 );
+
+userRoute.post(
+  "/login",
+  [
+    body("email").isEmail().withMessage("invailid email"),
+    body("password").isLength({ min: 6 }).withMessage("Password must have"),
+  ],
+  userController.loginUser
+);
+
 module.exports = userRoute;

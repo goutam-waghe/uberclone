@@ -31,4 +31,32 @@ module.exports.registerUser = async (req, res, next) => {
   });
 };
 
-module.exports.loginUser;
+//login
+module.exports.loginUser = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  const { email, password } = req.body;
+
+  let user = await userModel.findOne({ email }).select("+password");
+  if (!user) {
+    return res.status(401).json({
+      Message: "invalid email or password",
+    });
+  }
+  const isMatched = await user.comparePassword(password);
+
+  if (!isMatched) {
+    return res.status(401).json({
+      Message: "invaild password or email",
+    });
+  }
+  const token = user.generateAuthToken();
+
+  res.status(200).json({
+    Message: "login successful",
+    token,
+    user,
+  });
+};
