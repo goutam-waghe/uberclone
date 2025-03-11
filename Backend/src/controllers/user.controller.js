@@ -1,7 +1,9 @@
 const userModel = require("../models/user.model");
 const { validationResult } = require("express-validator");
 const createuser = require("../services/user.service");
+const blacklistModel = require("../models/blacklisttoken.model");
 
+//register user
 module.exports.registerUser = async (req, res, next) => {
   //yha pr wo sare error aa jayege jo input validation ke time apn ne mention kiye hai
   const errors = validationResult(req);
@@ -53,10 +55,27 @@ module.exports.loginUser = async (req, res, next) => {
     });
   }
   const token = user.generateAuthToken();
+  res.cookie("token", token);
 
   res.status(200).json({
     Message: "login successful",
     token,
     user,
+  });
+};
+
+// get user profile
+module.exports.userProfile = async function (req, res) {
+  return res.status(200).json(req.user);
+};
+
+//logout user
+module.exports.logoutUser = async function (req, res) {
+  res.clearCookie("token");
+
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+  await blacklistModel.create({ token });
+  res.json({
+    Message: "user logout",
   });
 };
