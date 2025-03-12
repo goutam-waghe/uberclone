@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken");
-const userModel = require("../models/user.model");
-const blacklistModel = require("../models/blacklisttoken.model");
 
-async function userAuth(req, res, next) {
+const blacklistModel = require("../models/blacklisttoken.model");
+const captainModel = require("../models/captain.model");
+
+async function captainAuth(req, res, next) {
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
   const blacklisted = await blacklistModel.findOne({ token });
-  console.log(blacklisted);
+
   if (blacklisted) {
     return res.status(401).json({
       Message: "unAuthrize user from backlisted",
@@ -19,7 +20,7 @@ async function userAuth(req, res, next) {
   try {
     const decode = jwt.verify(token, process.env.JWT_SECRET);
 
-    let user = await userModel.findById(decode._id);
+    let user = await captainModel.findById(decode._id);
 
     req.user = user;
     return next();
@@ -30,4 +31,4 @@ async function userAuth(req, res, next) {
   }
 }
 
-module.exports = userAuth;
+module.exports = captainAuth;
