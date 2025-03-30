@@ -14,7 +14,7 @@ module.exports.registerUser = async (req, res, next) => {
   const { fullname, email, password } = req.body;
   let user = await userModel.findOne({ email });
   if (user) {
-    return res.json({
+    return res.status(409).json({
       message: "user Already exits",
     });
   }
@@ -28,7 +28,7 @@ module.exports.registerUser = async (req, res, next) => {
 
   const token = user.generateAuthToken();
   res.cookie("token", token);
-  res.json({
+  res.status(201).json({
     token,
     user,
   });
@@ -73,10 +73,11 @@ module.exports.userProfile = async function (req, res) {
 //logout user
 module.exports.logoutUser = async function (req, res) {
   res.clearCookie("token");
+  console.log("reach logout");
 
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
   await blacklistModel.create({ token });
-  res.json({
+  res.status(200).json({
     Message: "user logout",
   });
 };

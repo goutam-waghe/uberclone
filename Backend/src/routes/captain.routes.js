@@ -24,8 +24,8 @@ captainRoute.post(
       .isInt({ min: 1 })
       .withMessage("capacity must be at least 1 "),
     body("vehicle.vehicleType")
-      .isIn(["car", "auto", "motercycle"])
-      .withMessage("capacity must be at least 1 "),
+      .isIn(["car", "auto", "bike"])
+      .withMessage("Invalid vehicle type"),
   ],
 
   captainController.registerCaptain

@@ -4,18 +4,23 @@ const createCaption = require("../services/captain.service");
 const blacklistModel = require("../models/blacklisttoken.model");
 
 module.exports.registerCaptain = async function (req, res) {
+  console.log("step1 ");
   const errors = validationResult(req);
+  console.log(errors);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
+  console.log("step2");
   const { fullname, email, password, vehicle } = req.body;
   let user = await captainModel.findOne({ email });
+  console.log("step3");
   if (user) {
-    return res.status(401).json({
+    return res.status(400).json({
       Message: "user Already exits",
     });
   }
+  console.log("step4");
 
   const hashedPassword = await captainModel.hashPassword(password);
 
@@ -33,6 +38,7 @@ module.exports.registerCaptain = async function (req, res) {
   res.cookie("token", token);
   res.json({
     token,
+    user,
     Message: "captian Rehgisterd Successfully",
   });
 };
@@ -47,14 +53,14 @@ module.exports.loginCaptain = async function (req, res) {
 
   let user = await captainModel.findOne({ email }).select("+password");
   if (!user) {
-    return res.status(401).json({
+    return res.status(400).json({
       Message: "invalid email or password",
     });
   }
   const isMatched = await user.camparePassword(password);
 
   if (!isMatched) {
-    return res.status(401).json({
+    return res.status(400).json({
       Message: "invaild password or email",
     });
   }
