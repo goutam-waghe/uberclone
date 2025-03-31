@@ -4,23 +4,20 @@ const createCaption = require("../services/captain.service");
 const blacklistModel = require("../models/blacklisttoken.model");
 
 module.exports.registerCaptain = async function (req, res) {
-  console.log("step1 ");
   const errors = validationResult(req);
-  console.log(errors);
+
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  console.log("step2");
   const { fullname, email, password, vehicle } = req.body;
   let user = await captainModel.findOne({ email });
-  console.log("step3");
+
   if (user) {
     return res.status(400).json({
       Message: "user Already exits",
     });
   }
-  console.log("step4");
 
   const hashedPassword = await captainModel.hashPassword(password);
 

@@ -24,6 +24,7 @@ const UserLogin = () => {
       {
         setUser(response.data.user)
         localStorage.setItem("token" , response.data.token)
+        
         navigate("/home")
       }
     } catch (error) {
